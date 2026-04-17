@@ -1,0 +1,75 @@
+server:
+  port: 9099
+
+spring:
+  application:
+    name: gateway-server
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://config-server:8088/}"
+  cloud:
+    gateway:
+      routes:
+        - id: product-service
+          uri: lb://PRODUCT
+          predicates:
+            - Path=/api/v1/products/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: product-cb
+                fallbackUri: forward:/fallback/product
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/api/v1/orders/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: order-cb
+                fallbackUri: forward:/fallback/order
+        - id: inventory-service
+          uri: lb://INVENTORY
+          predicates:
+            - Path=/api/v1/inventories/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: inventory-cb
+                fallbackUri: forward:/fallback/inventory
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/v1/payments/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: payment-cb
+                fallbackUri: forward:/fallback/payment
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 100
+            redis-rate-limiter.burstCapacity: 200
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://eureka-server:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: gateway-server
+    prefer-ip-address: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: always
