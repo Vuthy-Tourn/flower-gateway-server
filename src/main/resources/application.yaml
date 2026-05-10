@@ -49,11 +49,11 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
-      default-filters:
-        - name: RequestRateLimiter
-          args:
-            redis-rate-limiter.replenishRate: 100
-            redis-rate-limiter.burstCapacity: 200
+#      default-filters:
+#        - name: RequestRateLimiter
+#          args:
+#            redis-rate-limiter.replenishRate: 100
+#            redis-rate-limiter.burstCapacity: 200
 
 eureka:
   client:
