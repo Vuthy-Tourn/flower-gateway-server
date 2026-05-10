@@ -9,49 +9,21 @@ spring:
 
   cloud:
     gateway:
-      server:
-        webflux:
-          routes:
-          - id: product-service
-            uri: lb://PRODUCT
-            predicates:
-              - Path=/api/v1/products/**
-            filters:
-              - name: CircuitBreaker
-                args:
-                  name: product-cb
-                  fallbackUri: forward:/fallback/product
-          - id: order-service
-            uri: lb://ORDER-SERVICE
-            predicates:
-              - Path=/api/v1/orders/**
-            filters:
-              - name: CircuitBreaker
-                args:
-                  name: order-cb
-                  fallbackUri: forward:/fallback/order
-          - id: inventory-service
-            uri: lb://INVENTORY
-            predicates:
-              - Path=/api/v1/inventories/**
-            filters:
-              - name: CircuitBreaker
-                args:
-                  name: inventory-cb
-                  fallbackUri: forward:/fallback/inventory
-          - id: payment-service
-            uri: lb://PAYMENT-SERVICE
-            predicates:
-              - Path=/api/v1/payments/**
-            filters:
-              - name: CircuitBreaker
-                args:
-                  name: payment-cb
-                  fallbackUri: forward:/fallback/payment
-          discovery:
-            locator:
-              enabled: true
-              lower-case-service-id: true
+      routes:
+        - id: product-service
+          uri: lb://PRODUCT
+          predicates:
+            - Path=/api/v1/products/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: product-cb
+                fallbackUri: forward:/fallback/product
+
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
 #      default-filters:
 #        - name: RequestRateLimiter
 #          args:
